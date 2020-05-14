@@ -5,6 +5,8 @@ canvas.width=window.innerWidth*0.75;
 canvas.height=window.innerHeight;
 var paused=false;
 var score=0;
+var powerUp=0;
+var powerApply=false;
 var mySound=new Audio();
 mySound.src="bounce.wav";
 function togglePause(){
@@ -33,7 +35,7 @@ let colorArray=["red", "green", "pink", "yellow"];
 var y=canvas.height*0.85;
 var acc=0.3;
 var velocity=0;
-var myBallColor=colorArray[Math.floor(Math.random()*4)];
+var myBallColor=colorArray[Math.floor(Math.random()*3)];
 window.addEventListener('keydown', function(e){
 	let key=e.keyCode;
 	if(key==13)
@@ -158,15 +160,67 @@ function circleObstacles(){
 			topColor=colorArray[i];
 		}
 	}
+	
 	//console.log(bottomColor);
 	//console.log(topColor);
 	c.beginPath();
 	c.arc(canvas.width/2, obsY, innerRadius, 0, Math.PI*2);
 	c.fillStyle="#000";
 	c.fill();
-	c.restore();
+	if(powerUp%10!=1)c.restore();
+	if(!(powerUp%10>=1 && powerUp%10<3))
+			document.getElementById('powerupInfo').textContent=('');
+	if(powerUp%10==1)
+	{
+		/*c.beginPath();
+		c.arc(canvas.width/2, obsY, 15, 0, Math.PI*2);
+		c.fillStyle="#ffaf32";
+		c.fill();
+		c.restore();*/
+		
+		
+		
+		
+		for(let i=0;i<4;i++)
+	{
+		var startAngle=((Math.PI*2)/4)*i+offSmallSet;
+		var endAngle=((Math.PI*2)/4)*(i+1)+offSmallSet;
+		c.beginPath();
+		c.arc(canvas.width/2, obsY, 15, startAngle, endAngle);
+		c.fillStyle=colorArray[i];
+		c.lineTo(canvas.width/2, obsY);
+		c.fill();
+		
+		
+	}
+		c.restore();
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		if(y-15<obsY+15 && y+15>obsY+15)
+		{
+			powerApply=true;
+			document.getElementById('powerupInfo').textContent=('powerup on!');
+			//document.getElementById('powerupInfo').textContent+=(3-powerUp%10); 
+		}
+			
+	
+	}
 	if(obsY-(outerRadius*4.5)>canvas.height)
+	{
 		obsY=-outerRadius*2;
+		powerUp++;
+	}
 	if(!paused){
 	obsY+=obsVelocity;
 	offSet+=offSetInc;
@@ -178,9 +232,15 @@ function circleObstacles(){
 	}
 	//if(offSet==2)
 		//offSet=0;
+	if(powerUp%10==3)
+	{
+		powerApply=false;
+		
+	document.getElementById('powerupInfo').textContent='powerup over';
+	}
 	if(y-15<obsY+outerRadius && y+15>obsY+innerRadius)
 	{
-		if(bottomColor!=myBallColor)
+		if(bottomColor!=myBallColor && powerApply==false)
 		{
 			alert(score);
 			update(score);
@@ -192,7 +252,7 @@ function circleObstacles(){
 	
 	if(y-15<obsY-innerRadius && y+15>obsY-outerRadius)
 	{
-		if(topColor!=myBallColor)
+		if(topColor!=myBallColor && powerApply==false) 
 		{
 			alert(score);
 			update(score);
